@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import Pagination from './Paginacao';
-import RepoData from './RepoData';
-import { loadDataRequestRepos } from '../actions/repoActions';
-import { changeSearchWord } from '../actions/userBaseActions';
-import { connect } from 'react-redux';
-import { Alert } from 'react-bootstrap';
-import { PageHeader } from './styles';
+import React, { Component } from "react";
+import axios from "axios";
+import Pagination from "./Paginacao";
+import RepoData from "./RepoData";
+import { loadDataRequestRepos } from "../redux/actions/repoActions";
+import { changeSearchWord } from "../redux/actions/userBaseActions";
+import { connect } from "react-redux";
+import { Alert } from "react-bootstrap";
+import { PageHeader } from "./styles";
 
 class Paginacao extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class Paginacao extends Component {
     this.query = props.match.params.query;
     this.state = {
       total_count: null,
-      pagina_atual: 1
+      pagina_atual: 1,
     };
   }
 
@@ -25,7 +25,7 @@ class Paginacao extends Component {
   componentDidMount() {
     axios
       .get(`https://api.github.com/search/repositories?q=${this.query}`)
-      .then(res => this.setState({ total_count: res.data.total_count }));
+      .then((res) => this.setState({ total_count: res.data.total_count }));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -34,7 +34,7 @@ class Paginacao extends Component {
       this.props.loadDataRequestRepos(username);
   }
 
-  onPageChanged = data => {
+  onPageChanged = (data) => {
     let { currentPage } = data;
     this.setState({ pagina_atual: currentPage });
   };
@@ -44,11 +44,11 @@ class Paginacao extends Component {
     const { query } = this.props.match.params;
     return (
       <>
-        <PageHeader className='container'>
-          <div style={{ marginLeft: '50px', marginTop: '80px' }}>
-            <Alert variant={'secondary'}>
+        <PageHeader className="container">
+          <div style={{ marginLeft: "50px", marginTop: "80px" }}>
+            <Alert variant={"secondary"}>
               <h1>{query}</h1>
-              <p style={{ color: '#a6a6a6' }}>programming language</p>
+              <p style={{ color: "#a6a6a6" }}>programming language</p>
             </Alert>
           </div>
 
@@ -57,7 +57,7 @@ class Paginacao extends Component {
             pageLimit={30}
             pageNeighbours={2}
             defaultCurrent={1}
-            onPageChanged={e => this.onPageChanged(e)}
+            onPageChanged={(e) => this.onPageChanged(e)}
             key={total_count}
           />
 
@@ -70,15 +70,15 @@ class Paginacao extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { total_count } = state.repo;
 
   return {
-    total_count
+    total_count,
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { loadDataRequestRepos, changeSearchWord }
-)(Paginacao);
+export default connect(mapStateToProps, {
+  loadDataRequestRepos,
+  changeSearchWord,
+})(Paginacao);

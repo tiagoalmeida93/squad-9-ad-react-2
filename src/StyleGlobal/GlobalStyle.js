@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
 
 export default createGlobalStyle`
   * {
@@ -39,8 +39,6 @@ export default createGlobalStyle`
     transition: margin 1s;
   }
 
-
-
   @keyframes fadeIn {
     0% {
       opacity: 0;
@@ -49,5 +47,4 @@ export default createGlobalStyle`
       opacity: 1;
     }
   }
-
 `;

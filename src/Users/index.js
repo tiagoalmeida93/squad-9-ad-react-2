@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { loadDataRequest } from '../actions';
-import { connect } from 'react-redux';
+import React, { Component, useState, useEffect, useCallback } from "react";
+import { withRouter } from "react-router-dom";
+import { loadDataRequest } from "../actions";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   CardPrincipal,
   CardUserInfo,
@@ -9,17 +9,69 @@ import {
   StatusMessage,
   CardUserInfoHeader,
   CardUserInfoContent,
-  CardUserLogin
-} from './styles';
-import UserRepos from './Repos';
-import { addUser, changeSearchWord } from '../actions/userBaseActions';
-import { Spinner } from 'react-bootstrap';
+  CardUserLogin,
+} from "./styles";
+import UserRepos from "./Repos";
+import { addUser, changeSearchWord } from "../actions/userBaseActions";
+import { Spinner } from "react-bootstrap";
 
+export default function User(props) {
+  const dispatch = useDispatch();
+
+  const loadUserData = useCallback(() => {
+    const user = props.match.params.query;
+    console.log(props);
+    dispatch(loadDataRequest(user));
+    //dispatch(changeSearchWord(user));
+  }, [dispatch, props]);
+
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
+
+  const userData = useSelector((state) => state.userSearch.data);
+
+  return (
+    <>
+      {userData &&
+        userData.map((user) => {
+          return (
+            <CardPrincipal>
+              <div style={{ display: "flex", marginTop: "8rem" }}>
+                <UserAvatar src={user.avatar_url} />
+                <CardUserInfo>
+                  <CardUserInfoHeader>
+                    <h2>
+                      <a
+                        href={user.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {user.name}
+                      </a>
+                    </h2>
+                    <CardUserLogin>{user.login}</CardUserLogin>
+                  </CardUserInfoHeader>
+                  <CardUserInfoContent>
+                    <div>Repositórios públicos: {user.public_repos}</div>
+                    <div>Seguidores: {user.followers}</div>
+                    <div>Seguindo: {user.following}</div>
+                  </CardUserInfoContent>
+                </CardUserInfo>
+              </div>
+              {user.login && <UserRepos repos_url={user.repos_url} />}
+            </CardPrincipal>
+          );
+        })}
+    </>
+  );
+}
+/*
 class User extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: ''
+      username: "",
     };
   }
 
@@ -41,21 +93,21 @@ class User extends Component {
     let {
       userData,
       match: {
-        params: { query }
-      }
+        params: { query },
+      },
     } = this.props;
 
     const { userBase, addUser } = this.props;
 
     const user = userBase.find(
-      user => user.login.toLowerCase() === query.toLowerCase()
+      (user) => user.login.toLowerCase() === query.toLowerCase()
     );
 
     if (!user) {
       const { login, avatar_url } = [...userData][0];
 
       localStorage.setItem(
-        'userBase',
+        "userBase",
         JSON.stringify([...userBase, { login, avatar_url }])
       );
       addUser({ login, avatar_url });
@@ -69,38 +121,38 @@ class User extends Component {
       return (
         <div
           style={{
-            marginTop: '15%',
-            textAlign: 'center',
-            animation: '1.5s fadeIn ease-in-out 1.5s'
+            marginTop: "15%",
+            textAlign: "center",
+            animation: "1.5s fadeIn ease-in-out 1.5s",
           }}
         >
-          <Spinner animation='grow' />
-          <Spinner animation='grow' />
-          <Spinner animation='grow' />
+          <Spinner animation="grow" />
+          <Spinner animation="grow" />
+          <Spinner animation="grow" />
         </div>
       );
     if (error)
       return (
         <StatusMessage>
-          <span style={{ color: 'red' }}>{status}</span> Usuário não encontrado
+          <span style={{ color: "red" }}>{status}</span> Usuário não encontrado
         </StatusMessage>
       );
 
     return (
       <>
         {userData && userData.length > 0 && userBase && this.handleUserBase()}
-        {userData.map(user => {
+        {userData.map((user) => {
           return (
             <CardPrincipal>
-              <div style={{ display: 'flex', marginTop: '8rem' }}>
+              <div style={{ display: "flex", marginTop: "8rem" }}>
                 <UserAvatar src={user.avatar_url} />
                 <CardUserInfo>
                   <CardUserInfoHeader>
                     <h2>
                       <a
                         href={user.html_url}
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         {user.name}
                       </a>
@@ -123,7 +175,7 @@ class User extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { data, error, isFetching, status } = state.userSearch;
   const { userBase } = state;
   return {
@@ -131,11 +183,13 @@ const mapStateToProps = state => {
     userData: data || null,
     error,
     isFetching,
-    status
+    status,
   };
 };
 
-export default connect(
-  mapStateToProps,
-  { loadDataRequest, addUser, changeSearchWord }
-)(withRouter(User));
+export default connect(mapStateToProps, {
+  loadDataRequest,
+  addUser,
+  changeSearchWord,
+})(withRouter(User));
+*/
